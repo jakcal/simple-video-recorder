@@ -1,48 +1,40 @@
-# Simple Video Recorder
+# Recorder
 
-A modern, browser-based video recorder application that allows users to easily record, save, and manage video recordings directly in their browser. The application provides a clean, intuitive interface for video recording with features like duration tracking, local storage management, and download capabilities.
+A single-file, browser-based video recorder. Capture from your camera and microphone, review the clip, keep it in a local library, and download it. Nothing is uploaded — every recording stays in your browser's storage on your own device.
+
+**Live demo:** [jakcal.github.io/simple-video-recorder](https://jakcal.github.io/simple-video-recorder)
 
 ## Features
 
-- **Live Video Recording**: Capture video with audio using your device's camera and microphone
-- **Real-time Duration Display**: Track recording duration with a built-in timer
-- **Local Storage**: Automatically saves recordings using IndexedDB for persistent storage
-- **Recording Management**: View, play, download, and delete saved recordings
-- **Storage Monitoring**: Track storage usage and available space
-- **Modern UI**: Clean and responsive interface with smooth animations
-- **Download Support**: Export recordings in WebM format
-- **Confirmation Dialogs**: Prevent accidental deletion of recordings
+- **Camera + microphone capture** with a live viewfinder, tally strip, and a REC lamp
+- **Device and quality pickers** — switch camera, microphone, and resolution (480p → 4K) without reloading
+- **Pause and resume** mid-recording, with a timer that excludes paused time
+- **Keyboard transport** — <kbd>Space</kbd> to start/stop, <kbd>P</kbd> to pause
+- **Live microphone meter** driven by a real `AnalyserNode`, so you can see you are actually being picked up
+- **Automatic codec selection** — VP9/VP8 WebM where available, H.264 MP4 on Safari
+- **Local library** in IndexedDB: play, download, and delete past recordings
+- **Storage read-out** showing how much of the browser's quota is in use
+- **Honest failure states** for blocked permissions, a busy camera, a missing device, or an insecure page
 
-## Technologies Used
+## Requirements
 
-- **HTML5 Media APIs**: Utilizing `getUserMedia` for camera/microphone access and `MediaRecorder` for video capture
-- **IndexedDB**: Browser-based database for efficient local storage of video recordings
-- **Modern CSS**: 
-  - Flexbox for responsive layouts
-  - CSS Grid for structured content
-  - CSS Animations for smooth visual feedback
-  - Linear gradients for modern aesthetics
-- **JavaScript ES6+**: 
-  - Promises for async operations
-  - Blob API for video data handling
-  - Modern event handling
+Recording needs a **secure context**: `https://` or `http://localhost`. Opening `index.html` straight from the filesystem (`file://`) leaves `navigator.mediaDevices` and `navigator.storage` undefined, and the page will tell you so instead of breaking.
 
-## Why These Technologies?
+To run it locally:
 
-- **HTML5 Media APIs**: Provides native browser support for media capture without requiring external plugins
-- **IndexedDB**: Offers robust local storage solution for large video files with better performance than localStorage
-- **Modern CSS**: Ensures responsive design and smooth user experience across devices
-- **Vanilla JavaScript**: Keeps the application lightweight and fast without external dependencies
+```bash
+python3 -m http.server 8000
+# then open http://localhost:8000
+```
 
+## Technologies
 
-## Browser Support
+- `getUserMedia` for camera and microphone access, `MediaRecorder` for capture
+- Web Audio `AnalyserNode` for the input level meter
+- IndexedDB for blob storage, `StorageManager.estimate()` for the quota read-out
+- Native `<dialog>` for confirmations
+- Vanilla HTML, CSS, and JavaScript — no build step, no dependencies
 
-This application works best in modern browsers that support the following features:
-- MediaRecorder API
-- IndexedDB
-- getUserMedia API
-- WebM video format
+## Browser support
 
-## Demo
-
-Try the live demo: [Simple Video Recorder Demo](https://jakcal.github.io/simple-video-recorder)
+Recent Chrome, Edge, Firefox, and Safari. Safari records H.264 MP4 rather than WebM; the correct extension is applied to downloads automatically. Private/incognito windows may block IndexedDB, in which case recording and downloading still work but the library is disabled.
